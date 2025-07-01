@@ -97,6 +97,23 @@
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-200 to-purple-200 text-gray-800 p-4">
 
+    <!-- Music Toggle Button (always visible) -->
+    <button id="music-toggle" class="text-gray-700">
+        🎶 Mute Music
+    </button>
+
+    <!-- Background Music for Forgiveness Page -->
+    <audio id="forgiveness-music" loop>
+        <source src="kids-happy-335134.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Background Music for Birthday Page -->
+    <audio id="birthday-music" loop>
+        <source src="happy-birthday-lofi-version-222774.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
     <!-- Forgiveness Section -->
     <div id="forgiveness-section" class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl text-center max-w-md w-full transform transition-all duration-500 ease-in-out scale-100 opacity-100">
         <!-- Cute animated bear SVG -->
@@ -157,18 +174,6 @@
         <p class="text-lg text-gray-600 mt-8">
             Wishing you an amazing year ahead!
         </p>
-
-        <!-- Background Music -->
-        <audio id="background-music" loop>
-            <!-- Royalty-free "Happy Birthday" song from a public domain source -->
-            <source src="happy-birthday-lofi-version-222774.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-
-        <!-- Music Toggle Button -->
-        <button id="music-toggle" class="text-gray-700">
-            🎶 Mute Music
-        </button>
     </div>
 
     <script>
@@ -178,16 +183,19 @@
         const noButton = document.getElementById('no-button');
         const nudgeMessage = document.getElementById('nudge-message');
         const confettiContainer = document.getElementById('confetti-container');
-        const backgroundMusic = document.getElementById('background-music');
+        const forgivenessMusic = document.getElementById('forgiveness-music'); // New ID
+        const birthdayMusic = document.getElementById('birthday-music');     // New ID
         const musicToggleButton = document.getElementById('music-toggle');
 
         let isMusicPlaying = false; // Track music state
+        let currentMusic = null;    // Track which music is currently playing
+
         let noPressCount = 0; // Track how many times "No" has been pressed
         const noMessages = [
             "Aww, come on! My bear friend is sad now! 🥺 Please say yes!",
             "Are you sure? My heart is breaking a little! 💔",
             "But... but... I brought a bear! And confetti! And a song! 😭",
-            "Just one little 'Yes!'? Pretty please with a cherry on top? �",
+            "Just one little 'Yes!'? Pretty please with a cherry on top? 🍒",
             "Okay, fine! But I'm not giving up until you say 'Yes!' 💪"
         ];
 
@@ -204,7 +212,26 @@
             }
         }
 
+        // Attempt to play forgiveness music on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            forgivenessMusic.volume = 0.5; // Set a default volume
+            forgivenessMusic.play().then(() => {
+                isMusicPlaying = true;
+                currentMusic = forgivenessMusic;
+                musicToggleButton.textContent = '🎶 Mute Music';
+            }).catch(error => {
+                console.error("Autoplay prevented for forgiveness music:", error);
+                musicToggleButton.textContent = '🎶 Play Music (Click to enable)';
+            });
+        });
+
         yesButton.addEventListener('click', () => {
+            // Pause forgiveness music
+            if (currentMusic) {
+                currentMusic.pause();
+                currentMusic.currentTime = 0; // Rewind for next time
+            }
+
             // Animate forgiveness section out
             forgivenessSection.classList.add('scale-0', 'opacity-0');
             forgivenessSection.classList.remove('scale-100', 'opacity-100');
@@ -218,14 +245,17 @@
                 birthdaySection.classList.remove('scale-0', 'opacity-0');
                 createConfetti(); // Start confetti
 
-                // Play music when birthday section is shown
-                backgroundMusic.play().then(() => {
+                // Play birthday music
+                birthdayMusic.volume = 0.5; // Set a default volume
+                birthdayMusic.play().then(() => {
                     isMusicPlaying = true;
+                    currentMusic = birthdayMusic;
                     musicToggleButton.textContent = '🎶 Mute Music';
                 }).catch(error => {
-                    console.error("Autoplay prevented:", error);
-                    // Inform the user they might need to interact to play music
-                    musicToggleButton.textContent = '🎶 Play Music (Click to enable)';
+                    console.error("Autoplay prevented for birthday music:", error);
+                    // If autoplay fails, the button will still show "Mute Music"
+                    // because it assumes the user will interact to play.
+                    // The toggle button will still work correctly.
                 });
             }, 500); // Match this timeout to the transition duration
         });
@@ -254,18 +284,20 @@
 
         // Toggle music playback
         musicToggleButton.addEventListener('click', () => {
-            if (isMusicPlaying) {
-                backgroundMusic.pause();
-                isMusicPlaying = false;
-                musicToggleButton.textContent = '🔇 Play Music';
-            } else {
-                backgroundMusic.play().then(() => {
-                    isMusicPlaying = true;
-                    musicToggleButton.textContent = '🎶 Mute Music';
-                }).catch(error => {
-                    console.error("Failed to play music:", error);
-                    musicToggleButton.textContent = '🎶 Play Music (Error)';
-                });
+            if (currentMusic) { // Ensure there's a current music track
+                if (isMusicPlaying) {
+                    currentMusic.pause();
+                    isMusicPlaying = false;
+                    musicToggleButton.textContent = '🔇 Play Music';
+                } else {
+                    currentMusic.play().then(() => {
+                        isMusicPlaying = true;
+                        musicToggleButton.textContent = '🎶 Mute Music';
+                    }).catch(error => {
+                        console.error("Failed to play music:", error);
+                        musicToggleButton.textContent = '🎶 Play Music (Error)';
+                    });
+                }
             }
         });
     </script>
