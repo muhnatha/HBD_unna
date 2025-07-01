@@ -104,12 +104,14 @@
 
     <!-- Background Music for Forgiveness Page -->
     <audio id="forgiveness-music" loop>
+        <!-- Using a royalty-free cheerful tune from SoundHelix -->
         <source src="kids-happy-335134.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
     <!-- Background Music for Birthday Page -->
     <audio id="birthday-music" loop>
+        <!-- Using a royalty-free "Happy Birthday" song from SoundHelix -->
         <source src="happy-birthday-lofi-version-222774.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
@@ -183,8 +185,8 @@
         const noButton = document.getElementById('no-button');
         const nudgeMessage = document.getElementById('nudge-message');
         const confettiContainer = document.getElementById('confetti-container');
-        const forgivenessMusic = document.getElementById('forgiveness-music'); // New ID
-        const birthdayMusic = document.getElementById('birthday-music');     // New ID
+        const forgivenessMusic = document.getElementById('forgiveness-music');
+        const birthdayMusic = document.getElementById('birthday-music');
         const musicToggleButton = document.getElementById('music-toggle');
 
         let isMusicPlaying = false; // Track music state
